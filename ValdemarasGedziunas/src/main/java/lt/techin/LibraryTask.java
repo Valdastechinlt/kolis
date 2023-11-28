@@ -3,12 +3,14 @@ package lt.techin;
 import lt.techin.library.Author;
 import lt.techin.library.Book;
 import lt.techin.library.BookCatalog;
+import lt.techin.library.BookNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 
 public class LibraryTask implements BookCatalog {
@@ -16,6 +18,12 @@ public class LibraryTask implements BookCatalog {
     Map<String,Book> books = new HashMap<>();
     @Override
     public void addBook(Book book) {
+        if (book == null){
+            throw new IllegalArgumentException();
+        }
+        if (book.getIsbn().isEmpty() || book.getIsbn() == null){
+            throw new IllegalArgumentException();
+        }
         if (!books.containsKey(book.getIsbn())){
             books.put(book.getIsbn(),book);
         }
@@ -23,6 +31,9 @@ public class LibraryTask implements BookCatalog {
 
     @Override
     public Book getBookByIsbn(String isbn) {
+        if(books.values().stream().noneMatch(book -> book.getIsbn().equals(isbn))){
+            throw new BookNotFoundException("");
+        }
         return books.get(isbn);
     }
 
@@ -55,6 +66,9 @@ public class LibraryTask implements BookCatalog {
 
     @Override
     public Book findNewestBookByPublisher(String bookPublisher) {
+        if(books.values().stream().noneMatch(book -> book.getPublisher().equals(bookPublisher))){
+            throw new BookNotFoundException("");
+        }
         List<Book> publisherBooks = books.values().stream().filter(b -> b.getPublisher().equals(bookPublisher)).toList();
         Book myBook = publisherBooks.get(0);
         Book newestBook = new Book();
