@@ -1,14 +1,13 @@
 package lt.techin;
 
+import lt.techin.library.Author;
 import lt.techin.library.Book;
 import lt.techin.library.BookCatalog;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class LibraryTask implements BookCatalog {
 
@@ -21,14 +20,16 @@ public class LibraryTask implements BookCatalog {
     }
 
     @Override
-    public Book getBookByIsbn(String s) {
-        return null;
+    public Book getBookByIsbn(String isbn) {
+        return books.get(isbn);
     }
 
     @Override
-    public List<Book> searchBooksByAuthor(String s) {
-        return null;
+    public List<Book> searchBooksByAuthor(String authorName) {
+       return  books.values().stream().filter(b-> b.getAuthors().stream().anyMatch(a->a.getName().equals(authorName))).toList();
+
     }
+
 
     @Override
     public int getTotalNumberOfBooks() {
@@ -36,17 +37,25 @@ public class LibraryTask implements BookCatalog {
     }
 
     @Override
-    public boolean isBookInCatalog(String s) {
+    public boolean isBookInCatalog(String isbn) {
+        if (books.containsKey(isbn)){
+            return true;
+        }
         return false;
     }
 
     @Override
-    public boolean isBookAvailable(String s) {
+    public boolean isBookAvailable(String bookTitle) {
+        for (String key: books.keySet()) {
+            if (books.get(key).isAvailable()){
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
-    public Book findNewestBookByPublisher(String s) {
+    public Book findNewestBookByPublisher(String bookTitle) {
         return null;
     }
 
