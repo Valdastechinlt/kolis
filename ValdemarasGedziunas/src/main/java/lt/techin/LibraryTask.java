@@ -1,6 +1,4 @@
 package lt.techin;
-
-import lt.techin.library.Author;
 import lt.techin.library.Book;
 import lt.techin.library.BookCatalog;
 import lt.techin.library.BookNotFoundException;
@@ -10,7 +8,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 
 public class LibraryTask implements BookCatalog {
@@ -21,7 +18,8 @@ public class LibraryTask implements BookCatalog {
         if (book == null){
             throw new IllegalArgumentException();
         }
-        if (book.getIsbn().isEmpty() || book.getIsbn() == null){
+        if (book.getTitle() == null || book.getIsbn() == null ||
+                book.getIsbn().isEmpty() || book.getTitle().isEmpty()){
             throw new IllegalArgumentException();
         }
         if (!books.containsKey(book.getIsbn())){
@@ -70,19 +68,20 @@ public class LibraryTask implements BookCatalog {
             throw new BookNotFoundException("");
         }
         List<Book> publisherBooks = books.values().stream().filter(b -> b.getPublisher().equals(bookPublisher)).toList();
-        Book myBook = publisherBooks.get(0);
-        Book newestBook = new Book();
-        for (Book book:publisherBooks) {
-            if (book.getPublicationYear() > myBook.getPublicationYear()){
-                newestBook = book;
-            }
-        }
-        return newestBook;
+        return publisherBooks.stream().sorted(bookComparatorByNewest()).toList().getLast();
     }
 
+    public static Comparator<Book> bookComparatorByNewest() {
+        return Comparator.comparing(Book::getPublicationYear);
+    }
+    public static Comparator<Book> bookComparator() {
+        return Comparator.comparing(Book::getPublicationYear)
+                .thenComparing(Book::getTitle).thenComparing(Book::getPageCount);
+    }
     @Override
     public List<Book> getSortedBooks() {
-        return books.values().stream().sorted().collect(Collectors.toList());
+        List<Book> sortedBooks = new ArrayList<Book>(books.values());
+        return sortedBooks.stream().sorted(bookComparator()).collect(Collectors.toList());
     }
 
     @Override
@@ -102,5 +101,10 @@ public class LibraryTask implements BookCatalog {
                 .map(Book::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+    }
+
+    public Book getMostExpensiveBook(){
+        books.values().stream().sorted();
+        return null;
     }
 }
