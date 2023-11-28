@@ -102,9 +102,5 @@ public class LibraryTask implements BookCatalog {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     }
-
-    public Book getMostExpensiveBook(){
-        books.values().stream().sorted();
-        return null;
-    }
+    
 }
