@@ -4,15 +4,20 @@ import lt.techin.library.Book;
 import lt.techin.library.BookCatalog;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class LibraryTask implements BookCatalog {
 
+    Map<String,Book> books = new HashMap<>();
     @Override
     public void addBook(Book book) {
-
+        if (!books.containsKey(book.getIsbn())){
+            books.put(book.getIsbn(),book);
+        }
     }
 
     @Override
@@ -27,7 +32,7 @@ public class LibraryTask implements BookCatalog {
 
     @Override
     public int getTotalNumberOfBooks() {
-        return 0;
+        return books.size();
     }
 
     @Override
