@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 public class LibraryTask implements BookCatalog {
 
     Map<String,Book> books = new HashMap<>();
@@ -38,10 +40,7 @@ public class LibraryTask implements BookCatalog {
 
     @Override
     public boolean isBookInCatalog(String isbn) {
-        if (books.containsKey(isbn)){
-            return true;
-        }
-        return false;
+        return books.containsKey(isbn);
     }
 
     @Override
@@ -55,27 +54,39 @@ public class LibraryTask implements BookCatalog {
     }
 
     @Override
-    public Book findNewestBookByPublisher(String bookTitle) {
-        return null;
+    public Book findNewestBookByPublisher(String bookPublisher) {
+        List<Book> publisherBooks = books.values().stream().filter(b -> b.getPublisher().equals(bookPublisher)).toList();
+        Book myBook = publisherBooks.get(0);
+        Book newestBook = new Book();
+        for (Book book:publisherBooks) {
+            if (book.getPublicationYear() > myBook.getPublicationYear()){
+                newestBook = book;
+            }
+        }
+        return newestBook;
     }
 
     @Override
     public List<Book> getSortedBooks() {
-        return null;
+        return books.values().stream().sorted().collect(Collectors.toList());
     }
 
     @Override
     public Map<String, List<Book>> groupBooksByPublisher() {
-        return null;
+        return books.values().stream().collect(groupingBy(Book::getPublisher));
     }
 
     @Override
     public List<Book> filterBooks(Predicate<Book> predicate) {
-        return null;
+        return books.values().stream().filter(predicate).collect(Collectors.toList());
     }
 
     @Override
     public BigDecimal calculateTotalPrice() {
-        return null;
+        return books.values()
+                .stream()
+                .map(Book::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     }
 }
